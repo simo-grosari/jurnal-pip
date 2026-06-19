@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jurnal săptămânal de simptome – PIP</title>
+  <style>
+    :root {
+      --ink: #202735;
+      --muted: #667085;
+      --paper: #fffdfa;
+      --bg: #eef3f0;
+      --line: #d6ddd8;
+      --accent: #345f55;
+      --accent-soft: #e3eee9;
+      --warm: #b86b46;
+      --shadow: 0 12px 32px rgba(32, 39, 53, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .page { width: min(1100px, calc(100% - 28px)); margin: 28px auto 64px; }
+    header {
+      background: linear-gradient(125deg, #294f47, #47776b);
+      color: white;
+      border-radius: 22px;
+      padding: 28px clamp(20px, 5vw, 48px);
+      box-shadow: var(--shadow);
+    }
+    header h1 { margin: 0 0 6px; font-family: Georgia, serif; font-size: clamp(1.75rem, 4vw, 2.7rem); font-weight: 500; }
+    header p { margin: 0; color: #e2efeb; max-width: 760px; }
+    .privacy { margin-top: 13px; display: inline-flex; gap: 8px; align-items: center; font-size: .9rem; background: rgba(255,255,255,.13); padding: 7px 11px; border-radius: 99px; }
+    .toolbar {
+      position: sticky; top: 10px; z-index: 10;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      margin: 16px 0; padding: 12px;
+      border: 1px solid var(--line); border-radius: 16px;
+      background: rgba(255,253,250,.94); backdrop-filter: blur(10px); box-shadow: var(--shadow);
+    }
+    button {
+      border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer;
+      font: inherit; font-weight: 700; background: var(--accent); color: white;
+    }
+    button:hover { filter: brightness(.96); }
+    button.secondary { color: var(--accent); background: var(--accent-soft); }
+    button.danger { color: #8d3d32; background: #f7e9e5; margin-left: auto; }
+    #saveStatus { color: var(--muted); font-size: .9rem; }
+    .card {
+      background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: 0 6px 20px rgba(32,39,53,.05); padding: 22px; margin: 14px 0;
+    }
+    .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    label { display: block; font-size: .88rem; font-weight: 750; color: #3c4755; }
+    input, select, textarea {
+      width: 100%; margin-top: 6px; padding: 10px 11px; color: var(--ink); background: white;
+      border: 1px solid #cbd4ce; border-radius: 9px; font: inherit;
+    }
+    textarea { min-height: 86px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 3px solid rgba(52,95,85,.17); border-color: var(--accent); }
+    .section-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 25px 3px 10px; }
+    .section-title h2 { margin: 0; font-family: Georgia, serif; font-weight: 500; }
+    .section-title p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .days { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .day { margin: 0; }
+    .day h3 { margin: -22px -22px 18px; padding: 15px 21px; border-bottom: 1px solid var(--line); color: var(--accent); font-family: Georgia, serif; font-size: 1.35rem; }
+    .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .full { grid-column: 1 / -1; }
+    .hint { display: block; margin-top: 4px; color: var(--muted); font-size: .77rem; font-weight: 400; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .footer-note { color: var(--muted); font-size: .84rem; text-align: center; margin-top: 20px; }
+    @media (max-width: 760px) {
+      .days, .details-grid, .summary-grid { grid-template-columns: 1fr; }
+      .day-grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      button.danger { margin-left: 0; }
+    }
+    @media print {
+      @page { size: A4; margin: 11mm; }
+      body { background: white; font-size: 9.5pt; }
+      .page { width: 100%; margin: 0; }
+      header { color: #17221f; background: white; border: 2px solid #345f55; box-shadow: none; padding: 14px 18px; }
+      header p, .privacy { color: #3d4c48; }
+      .privacy { background: #edf3f0; }
+      .toolbar, .footer-note { display: none !important; }
+      .card { box-shadow: none; break-inside: avoid; padding: 13px; margin: 8px 0; border-radius: 8px; }
+      .days { grid-template-columns: 1fr; gap: 8px; }
+      .day h3 { margin: -13px -13px 10px; padding: 8px 12px; font-size: 13pt; }
+      textarea { min-height: 44px; }
+      input, select, textarea { padding: 5px 6px; border-color: #999; font-size: 9pt; }
+      .section-title { margin-top: 12px; }
+      .section-title p { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Jurnal săptămânal de simptome</h1>
+      <p>Pentru a consemna cum vă afectează starea de sănătate activitățile zilnice și mobilitatea, inclusiv pentru o cerere PIP.</p>
+      <div class="privacy">🔒 Datele se păstrează numai în acest browser</div>
+    </header>
+
+    <div class="toolbar" aria-label="Acțiuni">
+      <button type="button" id="printBtn">🖨️ Tipărește săptămâna</button>
+      <button type="button" id="saveBtn" class="secondary">Salvează acum</button>
+      <span id="saveStatus" role="status">Pregătit</span>
+      <button type="button" id="clearBtn" class="danger">Șterge formularul</button>
+    </div>
+
+    <section class="card details-grid" aria-label="Detalii generale">
+      <label>Numele persoanei
+        <input data-save id="personName" autocomplete="name" placeholder="Nume și prenume">
+      </label>
+      <label>Săptămâna care începe la
+        <input data-save id="weekStart" type="date">
+      </label>
+      <label class="full">Afecțiuni sau diagnostice relevante (opțional)
+        <textarea data-save id="conditions" placeholder="De exemplu: artrită, anxietate, durere cronică…"></textarea>
+      </label>
+    </section>
+
+    <div class="section-title">
+      <h2>Însemnări zilnice</h2>
+      <p>Notați exemple concrete și ajutorul de care ați avut nevoie.</p>
+    </div>
+    <div class="days" id="days"></div>
+
+    <div class="section-title">
+      <h2>Rezumatul săptămânii</h2>
+      <p>Ajută la observarea tiparelor și a zilelor mai dificile.</p>
+    </div>
+    <section class="card summary-grid">
+      <label>Zile bune / zile dificile
+        <textarea data-save id="goodBadDays" placeholder="Câte zile au fost dificile și de ce?"></textarea>
+      </label>
+      <label>Ajutor primit
+        <textarea data-save id="weeklyHelp" placeholder="De la cine și pentru ce activități?"></textarea>
+      </label>
+      <label>Observații pentru PIP
+        <textarea data-save id="pipSummary" placeholder="Ce nu ați putut face sigur, repetat, la un standard acceptabil sau într-un timp rezonabil?"></textarea>
+      </label>
+    </section>
+
+    <p class="footer-note">Acest jurnal este un instrument personal de evidență și nu înlocuiește sfatul medical sau juridic.</p>
+  </main>
+
+  <template id="dayTemplate">
+    <section class="card day">
+      <h3></h3>
+      <div class="day-grid">
+        <label class="full">Simptome și intensitate
+          <textarea data-field="symptoms" placeholder="Ce simptome ați avut? Intensitate 0–10, frecvență și durată."></textarea>
+        </label>
+        <label>Activități afectate
+          <textarea data-field="activities" placeholder="Spălat, îmbrăcat, gătit, mâncat, comunicare, bani, deplasare…"></textarea>
+          <span class="hint">Dați un exemplu concret.</span>
+        </label>
+        <label>Ajutor sau adaptări
+          <textarea data-field="help" placeholder="Ajutor de la altă persoană, dispozitiv, pauze sau încurajare."></textarea>
+        </label>
+        <label>Medicamente / tratament
+          <textarea data-field="treatment" placeholder="Ce ați luat sau făcut și ce efect a avut?"></textarea>
+        </label>
+        <label>Efecte secundare / incidente
+          <textarea data-field="incidents" placeholder="Căderi, durere accentuată, oboseală, confuzie, anxietate…"></textarea>
+        </label>
+        <label>Încadrare PIP
+          <select data-field="pipArea">
+            <option value="">Alegeți…</option>
+            <option>Viață de zi cu zi</option>
+            <option>Mobilitate</option>
+            <option>Ambele</option>
+          </select>
+        </label>
+        <label>Cum a fost ziua?
+          <select data-field="dayRating">
+            <option value="">Alegeți…</option>
+            <option>Bună</option>
+            <option>Mixtă</option>
+            <option>Dificilă</option>
+            <option>Foarte dificilă</option>
+          </select>
+        </label>
+      </div>
+    </section>
+  </template>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'jurnal-pip-saptamanal-v1';
+      const dayNames = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
+      const daysContainer = document.getElementById('days');
+      const template = document.getElementById('dayTemplate');
+      const status = document.getElementById('saveStatus');
+      let saveTimer;
+
+      dayNames.forEach((name, index) => {
+        const fragment = template.content.cloneNode(true);
+        const section = fragment.querySelector('.day');
+        section.dataset.day = index;
+        fragment.querySelector('h3').textContent = name;
+        fragment.querySelectorAll('[data-field]').forEach(el => {
+          el.id = `day${index}-${el.dataset.field}`;
+          el.dataset.save = '';
+        });
+        daysContainer.appendChild(fragment);
+      });
+
+      const fields = () => [...document.querySelectorAll('[data-save]')];
+
+      function collectData() {
+        return Object.fromEntries(fields().map(el => [el.id, el.value]));
+      }
+
+      function save(showMessage = true) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(collectData()));
+          if (showMessage) status.textContent = `Salvat la ${new Date().toLocaleTimeString('ro-RO', {hour: '2-digit', minute: '2-digit'})}`;
+        } catch (error) {
+          status.textContent = 'Salvarea nu este disponibilă în acest browser.';
+        }
+      }
+
+      function load() {
+        try {
+          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+          fields().forEach(el => { if (Object.hasOwn(data, el.id)) el.value = data[el.id]; });
+          if (Object.keys(data).length) status.textContent = 'Însemnările salvate au fost încărcate.';
+        } catch (error) {
+          status.textContent = 'Datele salvate nu au putut fi citite.';
+        }
+      }
+
+      document.addEventListener('input', event => {
+        if (!event.target.matches('[data-save]')) return;
+        status.textContent = 'Se salvează…';
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(save, 450);
+      });
+      document.addEventListener('change', event => {
+        if (event.target.matches('[data-save]')) save();
+      });
+      document.getElementById('saveBtn').addEventListener('click', () => save());
+      document.getElementById('printBtn').addEventListener('click', () => { save(false); window.print(); });
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        if (!confirm('Sigur doriți să ștergeți toate însemnările din această săptămână?')) return;
+        fields().forEach(el => { el.value = ''; });
+        localStorage.removeItem(STORAGE_KEY);
+        status.textContent = 'Formularul a fost șters.';
+      });
+
+      load();
+    })();
+  </script>
+</body>
+</html>
